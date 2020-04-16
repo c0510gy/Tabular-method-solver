@@ -1,4 +1,5 @@
 #include <vector>
+using namespace std;
 
 class BiMatch{
 public:
@@ -68,7 +69,7 @@ public:
 			q.pop();
 			for(int i = 0; i < adj[now].size(); i++){
 				int there = adj[now][i];
-				if(b[there]!=-1 && level[b[there]] == -1){
+				if(b[there] != -1 && level[b[there]] == -1){
 					level[b[there]] = level[now] + 1;
 					q.push(b[there]);
 				}
