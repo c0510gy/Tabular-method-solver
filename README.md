@@ -374,7 +374,7 @@ In this section, we're going to check how well the algorithm works in two perspe
 
 The main point is comparing results of two methods which are DFS with search space reduction, and greedy algorithm with max segment tree.
 
-To measure indexes(Runtime, and cost of the solution) of algorithm, I setted the sample size as 20. It means that measures 20 (sample size) times for a single constraint(In this case, number of minterms) ​​and then stores arithmetic mean of those measured 20 values which is presenting measured value of index for a single constraint.
+To measure indexes(Runtime, and cost of the solution) of algorithm, I setted the sample size as 20. It means that measures 20 (sample size) times for a single constraint(In this case, number of minterms) ​​and then stores arithmetic mean of those measured 20 values which is representing measured value of index for a single constraint.
 
 Input data was generated in uniformed random. And for uniformed input data, I made i<sup>th</sup> sample in each constraint uses i<sup>th</sup> random seed. It means that samples in the same order in each constraint will have a same random seed.
 
