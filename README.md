@@ -25,7 +25,7 @@ The format of `textCases.txt` is same as following:
 ...
 ```
 
-A example of `testCases.txt`:
+An example of `testCases.txt`:
 ```
 5
 5 0 1 5 6 7
@@ -196,7 +196,7 @@ void bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<int>& nowC
 }
 ```
 
-It simply do the DFS(Depth First Search) searching for every possible case based on current minimum cost. So, it has exponential time complexity.
+It simply do the DFS(Depth First Search) for every possible case based on current minimum cost. So, it has exponential time complexity.
 
 * Time complexity: `O(2^(N + M) + N + M)`
 
