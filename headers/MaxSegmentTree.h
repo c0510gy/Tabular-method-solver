@@ -1,3 +1,9 @@
+/*
+
+title: MaxSegmentTree.h
+author: 윤상건 (Sang-geon Yun, ggj06281@kookmin.ac.kr)
+
+*/
 #include <vector>
 using namespace std;
 
