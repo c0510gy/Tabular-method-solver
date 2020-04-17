@@ -1,5 +1,5 @@
-# Tabular-method-solver
-Tabular method solver - 2020 Digital Logic Design
+# Tabular-method-solver (Quine-McCluskey method)
+Tabular method (Quine-McCluskey method) solver - 2020-01 Digital Logic Design 01
 
 ## 1. Author
 * Name: 윤상건 (Sang-geon Yun)
@@ -155,20 +155,20 @@ Now, the problem is converted to **Set Cover** Problem since we have to choose m
 
 And as you know, Set Cover problem is **NP-complete** problem. So, it's impossible to find true solution in polynomial time.
 
-So, I made two ways to solve this problem. By **Brute force Algorithm with reducing searching space technique** and **Greedy Algorithm using max segment tree**.
+So, I made two ways to solve this problem. By **Brute force Algorithm with reducing search space technique** and **Greedy Algorithm using max segment tree**.
 
-#### 4.2.4.1. Algorithm for getting true solution: Brute force Algorithm with reducing searching space technique
+#### 4.2.4.1. Algorithm for getting true solution: Brute force Algorithm with reducing search space technique
 
 The code for this is same as following:
 ```cpp
 void bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<int>& nowCase, vector<int>& minCase , int selCnt, int idx, int cost, int& minCost){
-    if(idx == G.size() || (minCost != -1 && minCost <= cost)) // Reducing searching space using current minimum solution
+    if(idx == G.size() || (minCost != -1 && minCost <= cost)) // Reducing search space using current minimum solution
         return;
     
-    // Searching without choosing current vertex
+    // search without choosing current vertex
     bruteForce(G, selected, nowCase, minCase, selCnt, idx + 1, cost, minCost);
 
-    // Searching while choosing current vertex
+    // search while choosing current vertex
     int cnt = 0;
     for(int i = 0; i < G[idx].size(); ++i){
         int u = G[idx][i];
@@ -300,3 +300,77 @@ The approximate time complexities of each method are:
 * True Solution: `O(2^(N + M))`
 * Approximation Solution: `O((N + M)^2 log(N + M))`
 
+## 5. Accuracy of the algorithm
+
+I tested accuracy of the algorithm using the following test cases:
+```
+5
+5 0 1 5 6 7
+0
+5 0 1 2 3 7
+0
+8 0 2 5 6 7 8 9 13
+3 1 12 15
+8 0 4 8 10 11 12 13 15
+0
+10 0 2 3 4 6 7 9 11 13 15
+0
+```
+
+And the result is this:
+```
+Minterms: 0, 1, 5, 6, 7, 
+Dont cares: 
+True solution: F = a'b' + ac + ab
+Approximation: F = a'b' + ac + ab
+
+Minterms: 0, 1, 2, 3, 7, 
+Dont cares: 
+True solution: F = bc + a'
+Approximation: F = bc + a'
+
+Minterms: 0, 2, 5, 6, 7, 8, 9, 13, 
+Dont cares: 1, 12, 15, 
+True solution: F = a'cd' + b'c' + bd
+Approximation: F = a'cd' + b'c' + bd
+
+Minterms: 0, 4, 8, 10, 11, 12, 13, 15, 
+Dont cares: 
+True solution: F = ab'c + abd + c'd'
+Approximation: F = ab'c + abd + c'd'
+
+Minterms: 0, 2, 3, 4, 6, 7, 9, 11, 13, 15, 
+Dont cares: 
+True solution: F = a'd' + cd + ad
+Approximation: F = a'd' + cd + ad
+```
+
+## 6. Performance Test
+
+In this section, we're going to check how well the algorithm works in two perspectives: **runtime**, and **cost of the solution**.
+
+The main point is comparing results of two methods which are DFS with search space reduction, and greedy algorithm with max segment tree.
+
+To measure indexes(Runtime, and cost of the solution) of algorithm, I setted the sample size as 20. It means that measures 20 (sample size) times for a single constraint(In this case, number of minterms) ​​and then stores arithmetic mean of those measured 20 values which is presenting measured value of index for a single constraint.
+
+Input data was generated in uniformed random. And for uniformed input data, I made i<sup>th</sup> sample in each constraint uses i<sup>th</sup> random seed. It means that samples in the same order in each constraint will have a same random seed.
+
+You can find the code that used in this tests in the `./test` directory.
+
+### 6.1. Runtime test
+
+<img src="./images/time_100.png" width="450"/><img src="./images/time_ratio_100.png" width="450"/>
+
+<img src="./images/time_118.png" width="450"/><img src="./images/time_ratio_118.png" width="450"/>
+
+You can notice that the runtime of DFS method increases in exponential scale while runtime of greedy method increases in polynomial scale. Especially in the last case (Number of minterms = 118) DFS method were 3651 times slower than Greedy method.
+
+### 6.2. Cost of the solution test
+
+Cost means the number of PIs that are selected to cover all the given minterms.
+
+<img src="./images/cost_100.png" width="450"/><img src="./images/cost_ratio_100.png" width="450"/>
+
+<img src="./images/cost_118.png" width="450"/><img src="./images/cost_ratio_118.png" width="450"/>
+
+The ratio of average cost of solution almost equals to value of 1 even though the ratio of average runtime gets much much more larger.
