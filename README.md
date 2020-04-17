@@ -1,6 +1,27 @@
 # Tabular-method-solver (Quine-McCluskey method)
 Tabular method (Quine-McCluskey method) solver - 2020-01 Digital Logic Design 01
 
+## Table of Contents
+* [1. Author](#1-Author)
+* [2. Version and Compile](#2-Version-and-Compile)
+* [3. How to use](#3-How-to-use)
+    * [3.1.  Run using `main.cpp`](#31-run-using-maincpp)
+    * [3.2. Run using `TabularMethodSolver.h`](#32-run-using-tabularmethodsolverh)
+* [4. How it works](#4-how-it-works)
+    * [4.1. Limitation](#41-limitation)
+    * [4.2. Algorithm](#42-algorithm)
+        * [4.2.1. Overal algorithm](#421-overal-algorithm)
+        * [4.2.2. Algorithm for `getPI()`](#422-algorithm-for-getpi)
+        * [4.2.3. Algorithm for `getEPI()`](#423-algorithm-for-getepi)
+        * [4.2.4. Algorithm for choosing minimum number of PIs to cover all the minterms](#424-algorithm-for-choosing-minimum-number-of-pis-to-cover-all-the-minterms)
+            * [4.2.4.1. Algorithm for getting true solution: Brute force Algorithm with reducing search space technique](#4241-algorithm-for-getting-true-solution-brute-force-algorithm-with-reducing-search-space-technique)
+            * [4.2.4.2. Algorithm for getting approximation solution: Greedy Algorithm using max segment tree](#4242-algorithm-for-getting-approximation-solution-greedy-algorithm-using-max-segment-tree)
+        * [4.2.5. Overal Approximate Time Complexity](#425-overal-approximate-time-complexity)
+* [5. Accuracy of the algorithm](#5-accuracy-of-the-algorithm)
+* [6. Performance Test](#6-performance-test)
+    * [6.1. Runtime test](#61-runtime-test)
+    * [6.2. Cost of the solution test](#62-cost-of-the-solution-test)
+
 ## 1. Author
 * Name: 윤상건 (Sang-geon Yun)
 * Student ID: 20191632
@@ -344,6 +365,8 @@ Dont cares:
 True solution: F = a'd' + cd + ad
 Approximation: F = a'd' + cd + ad
 ```
+
+`True solution` means solution that used DFS method which is designed to guarantee the true solution (minimum possible cost solution). Meanwhile, `Approximation` means solution that used greedy method.
 
 ## 6. Performance Test
 
