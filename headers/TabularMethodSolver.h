@@ -362,7 +362,7 @@ void Tabular::getEPI(){
         }
     }
 
-    // Eliminating EPI and re-compression
+    // Eliminating EPI
     for(int i = 0; i < minterms.size(); ++i){
         int compPos = comp[minterms[i]];
         if(cnt[compPos] == 1){
