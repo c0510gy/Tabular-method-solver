@@ -1,3 +1,10 @@
+/*
+
+title: Tabular method solver
+author: 윤상건 (Sang-geon Yun, ggj06281@kookmin.ac.kr)
+
+*/
+
 #include <iostream>
 #include <algorithm>
 #include <string>
@@ -9,6 +16,7 @@
 #include <map>
 #include "BiMatch.h"
 #include "DinicWithLRFlow.h"
+#include "MaxSegmentTree.h"
 #define MAX_INPUTS 64
 using namespace std;
 
@@ -27,6 +35,74 @@ public:
     ImcntBits returnCombined(const ImcntBits& another);
     friend ImcntBits;
 };
+class Impcnt{
+private:
+    vector<ull> terms;
+    ImcntBits bits;
+    int numberOfInputs;
+    bool check, isEPI;
+public:
+    Impcnt(int numberOfInputs);
+    Impcnt(int numberOfInputs, ull term);
+    Impcnt(const vector<ull>& terms);
+    ull getTerm(int idx);
+    int getNumberOfTerms();
+    void addTerm(ull term);
+    void setCheck();
+    bool getCheck();
+    void setEPI();
+    bool getEPI();
+    void printTerms();
+    Impcnt returnCombined(const Impcnt& another);
+    ImcntBits getBits();
+    friend Impcnt;
+};
+class Tabular{
+private:
+    vector<ull> minterms, dontcares;
+    vector<Impcnt> PIs;
+    int numberOfInputs, totNumberOfEPI;
+    void addMin(ull m);
+    void addDon(ull d);
+    int countBit(ull b);
+public:
+    Tabular();
+    Tabular(vector<ull>& mins, vector<ull>& donts);
+    void addMinterm(ull m);
+    void addDontcare(ull d);
+    void getPI();
+    void getEPI();
+    void buildGraph(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& rev);
+    void bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<int>& nowCase, vector<int>& minCase, int selCnt, int idx, int cost, int& minCost);
+    void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& selected, vector<int>& minCase);
+    vector<int> approximationSolver();
+    vector<int> trueSolver();
+    string ansToString(vector<int> ans);
+    string solve(bool approx);
+};
+struct segNode{
+    int value, idx;
+    segNode(){
+        value = -1; idx = -1;
+    }
+    segNode(int value, int idx){
+        this->value = value;
+        this->idx = idx;
+    }
+    bool operator<(const segNode& another)const{
+        return value < another.value;
+    }
+    bool operator>(const segNode& another)const{
+        return value > another.value;
+    }
+    segNode operator+(const segNode& another)const{
+        segNode ret;
+        ret.value = value + another.value;
+        ret.idx = idx;
+        return ret;
+    }
+};
+
 ImcntBits::ImcntBits(){
     numberOfInputs = MAX_INPUTS;
     ask.resize(MAX_INPUTS, false);
@@ -74,28 +150,6 @@ ImcntBits ImcntBits::returnCombined(const ImcntBits& another){
     return ret;
 }
 
-class Impcnt{
-private:
-    vector<ull> terms;
-    ImcntBits bits;
-    int numberOfInputs;
-    bool check, isEPI;
-public:
-    Impcnt(int numberOfInputs);
-    Impcnt(int numberOfInputs, ull term);
-    Impcnt(const vector<ull>& terms);
-    ull getTerm(int idx);
-    int getNumberOfTerms();
-    void addTerm(ull term);
-    void setCheck();
-    bool getCheck();
-    void setEPI();
-    bool getEPI();
-    void printTerms();
-    Impcnt returnCombined(const Impcnt& another);
-    ImcntBits getBits();
-    friend Impcnt;
-};
 Impcnt::Impcnt(int numberOfInputs){
     this->numberOfInputs = numberOfInputs;
     check = false;
@@ -160,23 +214,6 @@ ImcntBits Impcnt::getBits(){
     return bits;
 }
 
-class Tabular{
-private:
-    vector<ull> minterms, dontcares;
-    vector<Impcnt> PIs;
-    int numberOfInputs;
-    void addMin(ull m);
-    void addDon(ull d);
-    int countBit(ull b);
-public:
-    Tabular();
-    Tabular(vector<ull>& mins, vector<ull>& donts);
-    void addMinterm(ull m);
-    void addDontcare(ull d);
-    void getPI();
-    void bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<int>& nowCase, vector<int>& minCase , int selCnt, int idx, int cost, int& minCost);
-    void solve();
-};
 void Tabular::addMin(ull m){
     minterms.push_back(m);
     numberOfInputs = max(numberOfInputs, (int)log2(m) + 1);
@@ -254,10 +291,10 @@ void Tabular::getPI(){
                     //cout << lists[i][j][k].getBits().toString() << endl;
                 }
         
-    cout << "Prime Implicants" << endl;
-    for(int i = 0; i < PIs.size(); ++i){
-        PIs[i].printTerms();
-    }
+    //cout << "Prime Implicants" << endl;
+    //for(int i = 0; i < PIs.size(); ++i){
+        //PIs[i].printTerms();
+    //}
 }
 void Tabular::bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<int>& nowCase, vector<int>& minCase , int selCnt, int idx, int cost, int& minCost){
     if(idx == G.size() || (minCost != -1 && minCost <= cost))
@@ -288,7 +325,31 @@ void Tabular::bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<i
     }
     nowCase.pop_back();
 }
-void Tabular::solve(){
+void Tabular::greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& selected, vector<int>& minCase){
+    int nL = GL.size(), nR = GR.size();
+    MaxSegment<segNode> seg(nL);
+    for(int v = 0; v < nL; ++v)
+        seg.setValue(0, v, 0, nL - 1, segNode(GL[v].size(), v));
+
+    int count = 0;
+    while(count < selected.size()){
+        segNode maxnode = seg.query(0, 0, nL - 1, 0, nL - 1);
+        minCase.push_back(maxnode.idx);
+        for(int i = 0; i < GL[maxnode.idx].size(); ++i){
+            int u = GL[maxnode.idx][i];
+
+            if(selected[u]) continue;
+            selected[u] = true;
+            ++count;
+            for(int j = 0; j < GR[u].size(); ++j){
+                int v = GR[u][j];
+
+                seg.update(0, v, 0, nL - 1, segNode(-1, 0));
+            }
+        }
+    }
+}
+void Tabular::getEPI(){
     // Coordinate compression
     set<ull> positions;
     map<ull, int> comp;
@@ -299,7 +360,7 @@ void Tabular::solve(){
         comp[*itr] = n++;
     
     // Finding EPI
-    int totNumberOfEPI = 0;
+    totNumberOfEPI = 0;
     vector<int> cnt(n, 0), last(n, -1);
     for(int i = 0; i < PIs.size(); ++i){
         for(int j = 0; j < PIs[i].getNumberOfTerms(); ++j){
@@ -312,7 +373,6 @@ void Tabular::solve(){
     }
 
     // Eliminating EPI and re-compression
-    set<ull> sat;
     for(int i = 0; i < minterms.size(); ++i){
         int compPos = comp[minterms[i]];
         if(cnt[compPos] == 1){
@@ -320,30 +380,41 @@ void Tabular::solve(){
                 continue;
             PIs[last[compPos]].setEPI(); // EPI Found!
             ++totNumberOfEPI;
-            for(int j = 0; j < PIs[last[compPos]].getNumberOfTerms(); ++j)
-                sat.insert(PIs[last[compPos]].getTerm(j));
         }
+    }
+}
+void Tabular::buildGraph(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& rev){
+    // Coordinate compression
+    set<ull> positions;
+    map<ull, int> comp;
+    for(int i = 0; i < minterms.size(); ++i)
+        positions.insert(minterms[i]);
+    
+    // Eliminating coordinates that are satisfied by Coordinate compression
+    set<ull> sat;
+    for(int i = 0; i < PIs.size(); ++i){
+        if(!PIs[i].getEPI()) // check EPI
+            continue;
+        for(int j = 0; j < PIs[i].getNumberOfTerms(); ++j)
+            sat.insert(PIs[i].getTerm(j));
     }
     while(!sat.empty()){
         ull m = *sat.begin(); sat.erase(sat.begin());
         positions.erase(m);
     }
-    n = 0;
-    comp.clear();
+    int n = 0;
     for(auto itr = positions.begin(); itr != positions.end(); ++itr)
         comp[*itr] = n++;
 
     // Building Bipartite Graph to solve Set Cover problem
     int nA = PIs.size() - totNumberOfEPI;
     int nB = n;
-    vector<vector<int>> biG;
-    vector<int> selected(nB, 0), rev, ans;
-    biG.resize(nA);
-    cout << "Essential Prime Implicants" << endl;
+
+    GL.resize(nA); GR.resize(nB);
+    //cout << "Essential Prime Implicants" << endl;
     for(int i = 0, v = 0; i < PIs.size(); ++i){
         if(PIs[i].getEPI()){
-            ans.push_back(i);
-            PIs[i].printTerms();
+            //PIs[i].printTerms();
             continue;
         }
         //PIs[i].printTerms();
@@ -352,21 +423,43 @@ void Tabular::solve(){
             ull term = PIs[i].getTerm(j);
             if(comp.find(term) == comp.end()) continue;
             int u = comp[term];
-            biG[v].push_back(u);
-            //cout << v << "->" << u + nA << endl;
+            GL[v].push_back(u);
+            GR[u].push_back(v);
+            //cout << v << "->" << u << endl;
         }
         ++v;
     }
+}
+vector<int> Tabular::approximationSolver(){
+    vector<vector<int>> GL, GR;
+    vector<int> rev, ans;
+    buildGraph(GL, GR, rev);
+
+    // Greedy
+    vector<int> solCase, selected(GR.size(), 0);
+    greedy(GL, GR, selected, solCase);
+
+    for(int i = 0; i < solCase.size(); ++i)
+        ans.push_back(rev[solCase[i]]);
+    
+    return ans;
+}
+vector<int> Tabular::trueSolver(){
+    vector<vector<int>> GL, GR;
+    vector<int> rev, ans;
+    buildGraph(GL, GR, rev);
 
     // Brute force
     int minCost = -1;
-    vector<int> nowCase, solCase;
-    bruteForce(biG, selected, nowCase, solCase, 0, 0, 0, minCost);
-
-    cout << "Minimum Cost: " << minCost << endl;
+    vector<int> nowCase, solCase, selected(GR.size(), 0);
+    bruteForce(GL, selected, nowCase, solCase, 0, 0, 0, minCost);
+    
     for(int i = 0; i < solCase.size(); ++i)
         ans.push_back(rev[solCase[i]]);
-        
+    
+    return ans;
+}
+string Tabular::ansToString(vector<int> ans){
     string ansEq = "F = ";
     for(int i = 0; i < ans.size(); ++i){
         int j = ans[i];
@@ -379,42 +472,22 @@ void Tabular::solve(){
         }
         if(i < ans.size() - 1) ansEq += " + ";
     }
-    cout << ansEq << endl;
-
-    /*
-    LRMaxFlow lrflow(nA * 2 + nB + 3, 0, nA * 2 + nB + 2);
-    int D = 0;
-    lrflow.addEdge(0, 1, D, 0); // S - d -> S'
-    for(int v = 0; v < nA; ++v){
-        lrflow.addEdge(1, v + 2, 1, 0); // S' - 1 -> V
-        lrflow.addEdge(0, v + 2, biG[v].size() - 1, 0); // S - (l - 1) -> V
-        lrflow.addEdge(v + 2, nA + v + 2, biG[v].size(), biG[v].size()); // V - l / l -> V'
-        for(int i = 0; i < biG[v].size(); ++i){
-            int u = biG[v][i];
-            lrflow.addEdge(nA + v + 2, nA * 2 + u + 2, 1, 0); // V' - 1 - > U
-        }
-    }
-    for(int u = 0; u < nB; ++u)
-        lrflow.addEdge(nA * 2 + u + 2, nA * 2 + nB + 2, 1, 0); // U - 1 -> T
-    
-    int maxFlow = lrflow.getMaxflow();
-    int sum = 0;
-    for(int i = 0; i < nA * 2 + nB + 3; i++) sum += lrflow.inSum[i];
-    if(maxFlow != sum){
-        cout << "NO\n";
-    }
-    cout << maxFlow << ", " << sum << endl;
-    cout << sum - maxFlow << endl;
-        
-    //HopcroftKarp bimatch(biG);
-        
-    //bimatch.flow();
-    int maxFlow2 = bi.solve();
-    cout << maxFlow2 << endl;
-
-    cout << maxFlow << endl << totNumberOfEPI << endl;
-    cout << maxFlow + totNumberOfEPI << endl;
-    */
+    return ansEq;
+}
+string Tabular::solve(bool approx){
+    getPI();
+    getEPI();
+    vector<int> ans;
+    if(approx)
+        ans = approximationSolver();
+    else
+        ans = trueSolver();
+    for(int i = 0, v = 0; i < PIs.size(); ++i)
+        if(PIs[i].getEPI())
+            ans.push_back(i);
+    sort(ans.begin(), ans.end());
+    string eq = ansToString(ans);
+    return eq;
 }
 
 int main(){
@@ -439,8 +512,8 @@ int main(){
         }
         cout << endl;
         Tabular tabular(minterms, dontcares);
-        tabular.getPI();
-        tabular.solve();
+        cout << "True solution: " << tabular.solve(false) << endl;
+        cout << "Approximation: " << tabular.solve(true) << endl;
         cout << endl;
     }
     
