@@ -217,13 +217,13 @@ void bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<int>& nowC
 }
 ```
 
-It simply do the DFS(Depth First Search) for every possible case based on current minimum cost. So, it has exponential time complexity.
+It simply do the DFS(Depth First Search) for every possible cases based on current minimum cost. So, it has exponential time complexity.
 
 * Time complexity: `O(2^(N + M) + N + M)`
 
 #### 4.2.4.2. Algorithm for getting approximation solution: Greedy Algorithm using max segment tree
 
-As you saw in `4.2.4.1.` it is impossible to solve for true solution when the number of minterms gets higher than 27.
+As you saw in `4.2.4.1.` it is impossible to solve for true solution when the number of minterms gets higher.
 
 So, it is much more realistic to solve this **Set Cover** problem in polynomal time by getting approximation solution.
 
