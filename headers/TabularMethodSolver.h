@@ -75,7 +75,7 @@ public:
     vector<int> approximationSolver();
     vector<int> trueSolver();
     string ansToString(vector<int> ans);
-    string solve(bool approx);
+    string solve(bool approx, bool showProcess=false);
     int solveTest(bool approx);
 };
 struct segNode{
@@ -188,9 +188,13 @@ bool Impcnt::getEPI(){
     return isEPI;
 }
 void Impcnt::printTerms(){
-    for(int i = 0; i < terms.size(); ++i)
-        cout << terms[i] << ", ";
-    cout << endl;
+    cout << "{";
+    for(int i = 0; i < terms.size(); ++i){
+        cout << terms[i];
+        if(i < terms.size() - 1)
+            cout << ", ";
+    }
+    cout << "}";
 }
 Impcnt Impcnt::returnCombined(const Impcnt& another){
     Impcnt ret(numberOfInputs);
@@ -460,9 +464,30 @@ string Tabular::ansToString(vector<int> ans){
     }
     return ansEq;
 }
-string Tabular::solve(bool approx){
+string Tabular::solve(bool approx, bool showProcess){
+    if(showProcess)
+        cout << "# Getting PI(s)..." << endl;
     getPI();
+    if(showProcess){
+        cout << "Number of PIs: " << PIs.size() << endl;
+        for(int i = 0; i < PIs.size(); ++i){
+            cout << PIs[i].getBits().toString() << ": ";
+            PIs[i].printTerms(); cout << endl;
+        }
+    }
+    if(showProcess)
+        cout << "# Getting EPI(s)..." << endl;
     getEPI();
+    if(showProcess){
+        cout << "Number of EPIs: " << totNumberOfEPI << endl;
+        for(int i = 0; i < PIs.size(); ++i){
+            if(!PIs[i].getEPI()) continue;
+            cout << PIs[i].getBits().toString() << ": ";
+            PIs[i].printTerms(); cout << endl;
+        }
+    }
+    if(showProcess)
+        cout << "# Getting Solution..." << endl;
     vector<int> ans;
     if(approx)
         ans = approximationSolver();

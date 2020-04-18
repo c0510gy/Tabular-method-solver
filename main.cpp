@@ -34,8 +34,10 @@ int main(){
         }
         cout << endl;
         Tabular tabular(minterms, dontcares);
-        cout << "True solution: " << tabular.solve(false) << endl;
-        cout << "Approximation: " << tabular.solve(true) << endl;
+        string trueSolution = tabular.solve(false, true);
+        string approxSolution = tabular.solve(true);
+        cout << "True solution: " << trueSolution << endl;
+        cout << "Approximation: " << approxSolution << endl;
         cout << endl;
     }
     

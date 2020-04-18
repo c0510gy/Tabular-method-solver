@@ -5,7 +5,7 @@ Tabular method (Quine-McCluskey method) solver - 2020-01 Digital Logic Design 01
 * [1. Author](#1-Author)
 * [2. Version and Compile](#2-Version-and-Compile)
 * [3. How to use](#3-How-to-use)
-    * [3.1.  Run using `main.cpp`](#31-run-using-maincpp)
+    * [3.1. Run using `main.cpp` and `testCases.txt`](#31-run-using-maincpp-and-testCasestxt)
     * [3.2. Run using `TabularMethodSolver.h`](#32-run-using-tabularmethodsolverh)
 * [4. How it works](#4-how-it-works)
     * [4.1. Limitation](#41-limitation)
@@ -31,7 +31,7 @@ Tabular method (Quine-McCluskey method) solver - 2020-01 Digital Logic Design 01
 * Compile command: `g++ -std=c++14 main.cpp -o main`
 
 ## 3. How to use
-### 3.1. Run using `main.cpp`
+### 3.1. Run using `main.cpp` and `testCases.txt`
 You can run the `Tabular Method Solver` using main.cpp by editing data in `textCases.txt` file.
 
 The format of `textCases.txt` is same as following:
@@ -72,6 +72,20 @@ Tabular tabular(minterms, dontcares);
 cout << "True solution: " << tabular.solve(false) << endl;
 cout << "Approximation: " << tabular.solve(true) << endl;
 ```
+
+**Constructor of `Tabular` class**
+```cpp
+Tabular::Tabular(vector<unsigned long long int>& mins, vector<unsigned long long int>& donts);
+```
+* `mins`: A vector that is containing minterms
+* `donts`: A vector that is containing don't cares
+
+**`solve` method**
+```cpp
+string Tabular::solve(bool approx, bool showProcess=false);
+```
+* `approx`: if it's true, `solve` will return approximate solution
+* `showProcess`: if it's true, `solve` will print process(PIs, EPIs) on standard out stream
 
 If the number of minterms is too big to get true solution, you can get approximation solution which has polynomial time complexity by following.
 
@@ -342,26 +356,81 @@ And the result is this:
 ```
 Minterms: 0, 1, 5, 6, 7, 
 Dont cares: 
+# Getting PI(s)...
+Number of PIs: 4
+00-: {0, 1}
+-01: {1, 5}
+1-1: {5, 7}
+11-: {6, 7}
+# Getting EPI(s)...
+Number of EPIs: 2
+00-: {0, 1}
+11-: {6, 7}
+# Getting Solution...
 True solution: F = a'b' + ac + ab
 Approximation: F = a'b' + ac + ab
 
 Minterms: 0, 1, 2, 3, 7, 
 Dont cares: 
+# Getting PI(s)...
+Number of PIs: 2
+-11: {3, 7}
+0--: {0, 1, 2, 3}
+# Getting EPI(s)...
+Number of EPIs: 2
+-11: {3, 7}
+0--: {0, 1, 2, 3}
+# Getting Solution...
 True solution: F = bc + a'
 Approximation: F = bc + a'
 
 Minterms: 0, 2, 5, 6, 7, 8, 9, 13, 
 Dont cares: 1, 12, 15, 
+# Getting PI(s)...
+Number of PIs: 7
+00-0: {0, 2}
+0-10: {2, 6}
+011-: {6, 7}
+-00-: {0, 1, 8, 9}
+1-0-: {8, 9, 12, 13}
+--01: {1, 5, 9, 13}
+-1-1: {5, 7, 13, 15}
+# Getting EPI(s)...
+Number of EPIs: 0
+# Getting Solution...
 True solution: F = a'cd' + b'c' + bd
 Approximation: F = a'cd' + b'c' + bd
 
 Minterms: 0, 4, 8, 10, 11, 12, 13, 15, 
 Dont cares: 
+# Getting PI(s)...
+Number of PIs: 6
+10-0: {8, 10}
+101-: {10, 11}
+110-: {12, 13}
+1-11: {11, 15}
+11-1: {13, 15}
+--00: {0, 4, 8, 12}
+# Getting EPI(s)...
+Number of EPIs: 1
+--00: {0, 4, 8, 12}
+# Getting Solution...
 True solution: F = ab'c + abd + c'd'
 Approximation: F = ab'c + abd + c'd'
 
 Minterms: 0, 2, 3, 4, 6, 7, 9, 11, 13, 15, 
 Dont cares: 
+# Getting PI(s)...
+Number of PIs: 4
+0--0: {0, 2, 4, 6}
+0-1-: {2, 3, 6, 7}
+--11: {3, 7, 11, 15}
+1--1: {9, 11, 13, 15}
+# Getting EPI(s)...
+Number of EPIs: 2
+0--0: {0, 2, 4, 6}
+1--1: {9, 11, 13, 15}
+# Getting Solution...
 True solution: F = a'd' + cd + ad
 Approximation: F = a'd' + cd + ad
 ```
