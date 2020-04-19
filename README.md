@@ -1,6 +1,10 @@
 # Tabular-method-solver (Quine-McCluskey method)
 Tabular method (Quine-McCluskey method) solver - 2020-01 Digital Logic Design 01
 
+**ABSTRACT**
+
+This project was created as a part of assignment of Digital Logic Design class 01. In this project, I implemented Tabluar Method (as known as Quine-McCluskey method) using C++ to automate circuit optimization process. And also In that process, I tried to lower the time complexity as possible as I can. One method that was implemented in this project to accomplish this is getting approximation solution that returns solution that has almost same cost as a true solution of the problem while works in much faster time (In polynomial time). Of course, it provides algorithm for getting true solution not only approximation algorithm.
+
 ## Table of Contents
 * [1. Author](#1-Author)
 * [2. Version and Compile](#2-Version-and-Compile)
@@ -10,13 +14,13 @@ Tabular method (Quine-McCluskey method) solver - 2020-01 Digital Logic Design 01
 * [4. How it works](#4-how-it-works)
     * [4.1. Limitation](#41-limitation)
     * [4.2. Algorithm](#42-algorithm)
-        * [4.2.1. Overal algorithm](#421-overal-algorithm)
+        * [4.2.1. Overall algorithm](#421-overall-algorithm)
         * [4.2.2. Algorithm for `getPI()`](#422-algorithm-for-getpi)
         * [4.2.3. Algorithm for `getEPI()`](#423-algorithm-for-getepi)
         * [4.2.4. Algorithm for choosing minimum number of PIs to cover all the minterms](#424-algorithm-for-choosing-minimum-number-of-pis-to-cover-all-the-minterms)
             * [4.2.4.1. Algorithm for getting true solution: Brute force Algorithm with reducing search space technique](#4241-algorithm-for-getting-true-solution-brute-force-algorithm-with-reducing-search-space-technique)
             * [4.2.4.2. Algorithm for getting approximation solution: Greedy Algorithm using max segment tree](#4242-algorithm-for-getting-approximation-solution-greedy-algorithm-using-max-segment-tree)
-        * [4.2.5. Overal Approximate Time Complexity](#425-overal-approximate-time-complexity)
+        * [4.2.5. Overall Approximate Time Complexity](#425-overall-approximate-time-complexity)
 * [5. Accuracy of the algorithm](#5-accuracy-of-the-algorithm)
 * [6. Performance Test](#6-performance-test)
     * [6.1. Runtime test](#61-runtime-test)
@@ -102,9 +106,9 @@ It only can get the solution for a situation where the number of variables is le
 
 ### 4.2. Algorithm
 
-#### 4.2.1. Overal algorithm
+#### 4.2.1. Overall algorithm
 
-Overal algorithm of Tabular Method Solver can described as following psudocode
+Overall algorithm of Tabular Method Solver can described as following psudocode
 ```cpp
 string solve(bool approx){
     getPI(); // Getting Prime Implicants
@@ -329,7 +333,7 @@ void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& selec
 
 * Time complexity: `O((N + M)log(N + M))` (Amotized time complexity)
 
-### 4.2.5. Overal Approximate Time Complexity
+### 4.2.5. Overall Approximate Time Complexity
 
 The approximate time complexities of each method are:
 * True Solution: `O(2^(N + M))`
