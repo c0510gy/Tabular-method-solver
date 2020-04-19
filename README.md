@@ -3,7 +3,7 @@ Tabular method (Quine-McCluskey method) solver - 2020-01 Digital Logic Design 01
 
 **ABSTRACT**
 
-This project was created as a part of assignment of Digital Logic Design class 01. In this project, I implemented Tabluar Method (as known as Quine-McCluskey method) using C++ to automate circuit optimization process. And also In that process, I tried to lower the time complexity as possible as I can. One method that was implemented in this project to accomplish this is getting approximation solution that returns solution that has almost same cost as a true solution of the problem while works in much faster time (In polynomial time). Of course, it provides algorithm for getting true solution not only approximation algorithm.
+This project was created as a part of the assignment of Digital Logic Design class 01. In this project, I implemented the Tabular Method (as known as QMM - Quine-McCluskey Method) using C++ to automate the circuit optimization process. And also In that process, I tried to lower the time complexity as possible as I can such as implementing the search space reduction method rather than just search for every possible combination. But even if implementing such techniques, it doesn't help in lowering the time complexity since the last step of QMM is ultimately Set Cover problem which is NP-Complete. So I tried not only lowering time complexity of front part of steps in QMM or implementing techniques like search space reduction, but also tried to lower the complexity of the last step which is can be seen as Set Cover problem by sacrificing true solution. One method that was implemented in this project to accomplish this is getting approximation solution that returns solution that has almost same cost as a true solution of the problem while works in much faster time (In polynomial time). Of course, this project provides an algorithm for getting true solutions not only an approximation algorithm. At last, I tested accuracy and performance(Runtime, Cost of the solution) of the algorithm.
 
 ## Table of Contents
 * [1. Author](#1-Author)
@@ -243,12 +243,12 @@ It simply do the DFS(Depth First Search) for every possible cases based on curre
 
 As you saw in `4.2.4.1.` it is impossible to solve for true solution when the number of minterms gets higher.
 
-So, it is much more realistic to solve this **Set Cover** problem in polynomal time by getting approximation solution.
+So, it is much more realistic to solve this **Set Cover** problem in polynomial time by getting approximation solution.
 
 My idea on this approximation solution is like following psudocode:
 ```
 Count := number of selected vertices in G_R
-Flow[v] := number of unselected vertextes in G_R that vertex v from G_L is directing
+Flow[v] := number of unselected vertexes in G_R that vertex v from G_L is directing
 while Count < |G_R|:
     v := argmax(Flow)
     Select v
@@ -256,7 +256,7 @@ while Count < |G_R|:
     Update Flow[]
 ```
 
-It is simple method but, getting value of `argmax(Flow)` and updating `Flow[]` consume a lot of time.
+It is a simple method but, getting the value of `argmax(Flow)` and updating `Flow[]` consume a lot of time.
 
 To make getting value of `argmax(Flow)` and updating `Flow[]` faster, I used **Max Segment Tree**.
 
@@ -287,7 +287,7 @@ struct segNode{
 ```
 
 Each node has two values:
-* `value`: number of unselected vertextes in G_R that vertex v from G_L is directing
+* `value`: number of unselected vertexes in G_R that vertex v from G_L is directing
 * `idx`: index of vertex in `G_L`
 
 Using this segment tree, we can perform getting value of `argmax(Flow)` in `O(log(N + M))` and updating `Flow[]` in `O(log(N + M))` (Amortized time complexity).
@@ -439,19 +439,19 @@ True solution: F = a'd' + cd + ad
 Approximation: F = a'd' + cd + ad
 ```
 
-`True solution` means solution that used DFS method which is designed to guarantee the true solution (minimum possible cost solution). Meanwhile, `Approximation` means solution that used greedy method.
+`True solution` means a solution that used DFS method which is designed to guarantee the true solution (minimum possible cost solution). Meanwhile, `Approximation` means a solution that used greedy method.
 
 ## 6. Performance Test
 
 In this section, we're going to check how well the algorithm works in two perspectives: **runtime**, and **cost of the solution**.
 
-The main point is comparing results of two methods which are DFS with search space reduction, and greedy algorithm with max segment tree.
+The main point is comparing the results of two methods which are DFS with search space reduction, and greedy algorithm with max segment tree.
 
-To measure indexes(Runtime, and cost of the solution) of algorithm, I setted the sample size as 20. It means that measures 20 (sample size) times for a single constraint(In this case, number of minterms) ​​and then stores arithmetic mean of those measured 20 values which is representing measured value of index for a single constraint.
+To measure indexes(Runtime, and cost of the solution) of the algorithm, I set the sample size as 20. It means that measures 20 (sample size) times for a single constraint(In this case, number of minterms) ​​and then stores arithmetic mean of those measured 20 values which is representing a measured value of the index for a single constraint.
 
-Input data was generated in uniformed random. And for uniformed input data, I made i<sup>th</sup> sample in each constraint uses i<sup>th</sup> random seed. It means that samples in the same order in each constraint will have a same random seed.
+Input data was generated in uniformed random. And for uniformed input data, I made i<sup>th</sup> sample in each constraint uses i<sup>th</sup> random seed. It means that samples in the same order in each constraint will have the same random seed.
 
-You can find the code that used in this tests in the `./test` directory.
+You can find the code that used in these tests in the `./test` directory.
 
 ### 6.1. Runtime test
 
@@ -459,7 +459,7 @@ You can find the code that used in this tests in the `./test` directory.
 
 <img src="./images/time_118.png" width="450"/><img src="./images/time_ratio_118.png" width="450"/>
 
-You can notice that the runtime of DFS method increases in exponential scale while runtime of greedy method increases in polynomial scale. Especially in the last case (Number of minterms = 118) DFS method were 3651 times slower than Greedy method.
+You can notice that the runtime of DFS method increases in exponential scale while runtime of greedy method increases in polynomial scale. Especially in the last case (Number of minterms = 118) DFS method was 3,651 times slower than the Greedy method.
 
 ### 6.2. Cost of the solution test
 
@@ -469,4 +469,4 @@ Cost means the number of PIs that are selected to cover all the given minterms.
 
 <img src="./images/cost_118.png" width="450"/><img src="./images/cost_ratio_118.png" width="450"/>
 
-The ratio of average cost of solution almost equals to value of 1 even though the ratio of average runtime gets much much more larger.
+The ratio of average cost of solution almost equals to the value of 1 even though the ratio of average runtime gets much much more larger.
