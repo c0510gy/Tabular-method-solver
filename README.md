@@ -331,7 +331,7 @@ void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& selec
 }
 ```
 
-* Time complexity: `O((N + M)log(N + M))` (Amotized time complexity)
+* Time complexity: `O(N log(N))` (Amotized time complexity)
 
 ### 4.2.5. Overall Approximate Time Complexity
 
