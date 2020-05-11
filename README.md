@@ -331,6 +331,40 @@ void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& selec
 }
 ```
 
+Unfortunately, the code above has one problem. For each of vertices in `G_R`, it is guaranteed to visit only one-time thanks to `if(selected[u]) continue;`. But, to check whether the vertex has been visited or not, `selected[u]` should be checked every time when `G_L` has an edge to vertex `u` so, one vertex can be visited multiple times.
+
+To solve this, I implemented an Ordered Balanced Tree aka `std::set`. The following code shows a new object called `GLSet`. Using this, we can manage each of vertices much more efficiently by removing edges that flow to selected vertices in `G_R` from each of vertices in `G_L` to prevent multiple times visiting.
+
+```cpp
+void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& minCase){
+    int nL = GL.size(), nR = GR.size();
+    MaxSegment<segNode> seg(nL);
+    for(int v = 0; v < nL; ++v)
+        seg.setValue(0, v, 0, nL - 1, segNode(GL[v].size(), v));
+
+    vector<set<int>> GLSet(GL.size());
+    for(int i = 0; i < GL.size(); ++i)
+        GLSet[i] = set<int>(GL[i].begin(), GL[i].end());
+
+    int count = 0;
+    while(count < GR.size()){
+        segNode maxnode = seg.query(0, 0, nL - 1, 0, nL - 1);
+        minCase.push_back(maxnode.idx);
+        for(auto itr = GLSet[maxnode.idx].begin(); itr != GLSet[maxnode.idx].end(); ++itr){
+            int u = *itr;
+            ++count;
+            for(int i = 0; i < GR[u].size(); ++i){
+                int v = GR[u][i];
+                if(v != maxnode.idx)
+                    GLSet[v].erase(u);
+                seg.update(0, v, 0, nL - 1, segNode(-1, 0));
+            }
+        }
+        GLSet[maxnode.idx].clear();
+    }
+}
+```
+
 * Time complexity: `O(N log(N))` (Amotized time complexity)
 
 ### 4.2.5. Overall Approximate Time Complexity
