@@ -365,7 +365,7 @@ void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& minCa
 }
 ```
 
-* Time complexity: `O(N log(N))` (Amotized time complexity)
+* Time complexity: `O(N log(N))` (Amortized time complexity)
 
 ### 4.2.5. Overall Approximate Time Complexity
 
