@@ -71,7 +71,7 @@ public:
     void getEPI();
     void buildGraph(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& rev);
     void bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<int>& nowCase, vector<int>& minCase, int selCnt, int idx, int cost, int& minCost);
-    void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& selected, vector<int>& minCase);
+    void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& minCase);
     vector<int> approximationSolver();
     vector<int> trueSolver();
     string ansToString(vector<int> ans);
@@ -320,28 +320,31 @@ void Tabular::bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<i
     }
     nowCase.pop_back();
 }
-void Tabular::greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& selected, vector<int>& minCase){
+void Tabular::greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& minCase){
     int nL = GL.size(), nR = GR.size();
     MaxSegment<segNode> seg(nL);
     for(int v = 0; v < nL; ++v)
         seg.setValue(0, v, 0, nL - 1, segNode(GL[v].size(), v));
 
+    vector<set<int>> GLSet(GL.size());
+    for(int i = 0; i < GL.size(); ++i)
+        GLSet[i] = set<int>(GL[i].begin(), GL[i].end());
+
     int count = 0;
-    while(count < selected.size()){
+    while(count < GR.size()){
         segNode maxnode = seg.query(0, 0, nL - 1, 0, nL - 1);
         minCase.push_back(maxnode.idx);
-        for(int i = 0; i < GL[maxnode.idx].size(); ++i){
-            int u = GL[maxnode.idx][i];
-
-            if(selected[u]) continue;
-            selected[u] = true;
+        for(auto itr = GLSet[maxnode.idx].begin(); itr != GLSet[maxnode.idx].end(); ++itr){
+            int u = *itr;
             ++count;
-            for(int j = 0; j < GR[u].size(); ++j){
-                int v = GR[u][j];
-
+            for(int i = 0; i < GR[u].size(); ++i){
+                int v = GR[u][i];
+                if(v != maxnode.idx)
+                    GLSet[v].erase(u);
                 seg.update(0, v, 0, nL - 1, segNode(-1, 0));
             }
         }
+        GLSet[maxnode.idx].clear();
     }
 }
 void Tabular::getEPI(){
@@ -426,8 +429,8 @@ vector<int> Tabular::approximationSolver(){
     buildGraph(GL, GR, rev);
 
     // Greedy
-    vector<int> solCase, selected(GR.size(), 0);
-    greedy(GL, GR, selected, solCase);
+    vector<int> solCase;
+    greedy(GL, GR, solCase);
 
     for(int i = 0; i < solCase.size(); ++i)
         ans.push_back(rev[solCase[i]]);
