@@ -3,7 +3,7 @@ Tabular method (Quine-McCluskey method) solver - 2020-01 Digital Logic Design 01
 
 **ABSTRACT**
 
-This project was created as a part of the assignment of Digital Logic Design class 01. In this project, I implemented the Tabular Method (as known as QMM - Quine-McCluskey Method) using C++ to automate the circuit optimization process. And also In that process, I tried to lower the time complexity as possible as I can such as implementing the search space reduction method rather than just search for every possible combination. But even if implementing such techniques, it doesn't help in lowering the time complexity since the last step of QMM is ultimately Set Cover problem which is NP-Complete. So I tried not only lowering time complexity of front part of steps in QMM or implementing techniques like search space reduction, but also tried to lower the complexity of the last step which is can be seen as Set Cover problem by sacrificing true solution. One method that was implemented in this project to accomplish this is getting approximation solution that returns solution that has almost same cost as a true solution of the problem while works in much faster time (In polynomial time). Of course, this project provides an algorithm for getting true solutions not only an approximation algorithm. At last, I tested accuracy and performance(Runtime, Cost of the solution) of the algorithm.
+This project was created as a part of the assignment for Digital Logic Design class 01. In this project, I implemented the Tabular Method (as known as QMM - Quine-McCluskey Method) using C++ to automate the circuit optimization process. And also In that process, I tried to lower the time complexity as much possible as I can such as implementing the search space reduction method rather than just searching for every possible combination. But even if implementing such techniques, it doesn't help in lowering the time complexity since the last step of QMM is ultimately the Set Cover problem which is NP-Complete. So I tried not only lowering the time complexity of the front part of steps in QMM or implementing techniques like search space reduction but also tried to lower the complexity of the last step which is can be seen as the Set Cover problem by sacrificing true solution. One method that was implemented in this project to accomplish this is getting an approximation solution that returns a solution that has the almost same cost as a true solution of the problem while working in a much faster time (In polynomial time). Of course, this project provides an algorithm for getting true solutions not only an approximation algorithm. At last, I tested the accuracy and performance(Runtime, Cost of the solution) of the algorithm.
 
 ## Table of Contents
 * [1. Author](#1-Author)
@@ -38,7 +38,7 @@ This project was created as a part of the assignment of Digital Logic Design cla
 ### 3.1. Run using `main.cpp` and `testCases.txt`
 You can run the `Tabular Method Solver` using main.cpp by editing data in `textCases.txt` file.
 
-The format of `textCases.txt` is same as following:
+The format of `textCases.txt` is the same as follows:
 ```
 (Number of test cases)
 (Number of minterms of test case #1) (Minterms)
@@ -66,7 +66,7 @@ An example of `testCases.txt`:
 ```
 
 ### 3.2. Run using `TabularMethodSolver.h`
-You can also run the `Tabular Method Solver` manually by using `TabularMethodSolver.h` header which supports a class for solving tabular method problem.
+You can also run the `Tabular Method Solver` manually by using `TabularMethodSolver.h` header which supports a class for solving tabular method problems.
 
 Checkout the following example:
 ```cpp
@@ -91,32 +91,32 @@ string Tabular::solve(bool approx, bool showProcess=false);
 * `approx`: if it's true, `solve` will return approximate solution
 * `showProcess`: if it's true, `solve` will print process(PIs, EPIs) on standard out stream
 
-If the number of minterms is too big to get true solution, you can get approximation solution which has polynomial time complexity by following.
+If the number of minterms is too big to get a true solution, you can get an approximation solution that has polynomial time complexity by following.
 
 * True solution: `tabular.solve(false)`
 * Approximation solution: `tabular.solve(true)`
 
 ## 4. How it works
 
-*Note: Every time complexities that written in this section are approximated. So they could be not accurate.*
+*Note: Every time complexities that are written in this section are approximated. So they could be not accurate.*
 
 ### 4.1. Limitation
 
-It only can get the solution for a situation where the number of variables is less or equal to 64 since it handle minterms by `unsigned long long int` type.
+It only can get the solution for a situation where the number of variables is less or equal to 64 since it handles minterms by `unsigned long long int` type.
 
 ### 4.2. Algorithm
 
 #### 4.2.1. Overall algorithm
 
-Overall algorithm of Tabular Method Solver can described as following psudocode
+The overall algorithm of the Tabular Method Solver can be described as the following pseudocode
 ```cpp
 string solve(bool approx){
     getPI(); // Getting Prime Implicants
     getEPI(); // Getting Essential Prime Implicants
-    vector<int> ans; // Stores PIs that cover every minterms in minimum cost
+    vector<int> ans; // Stores PIs that cover every minterm in minimum cost
     if(approx) // Finding approximation solution using PIs that are not EPI.
         ans = approximationSolver();
-    else // Finding true solution using PIs that are not EPI.
+    else // Finding a true solution using PIs that are not EPI.
         ans = trueSolver();
     for(int i = 0, v = 0; i < PIs.size(); ++i)
         if(PIs[i].getEPI())
@@ -129,9 +129,9 @@ string solve(bool approx){
 
 #### 4.2.2. Algorithm for `getPI()`
 
-The algorithm that is used for `getPI()` is same as the first step of Quine–McCluskey algorithm.
+The algorithm that is used for `getPI()` is the same as the first step of the Quine–McCluskey algorithm.
 
-Time complexity can be calculated by following when `B` denotes the maximum number of bits of MST among the minterms and don't cares, `N` denotes the number of minterms, `M` denotes the number of don't cares, and `T_i` denotes the set of numbers with number of 1s in bits is equal to `i`.
+Time complexity can be calculated by following when `B` denotes the maximum number of bits of MST among the minterms and don't cares, `N` denotes the number of minterms, `M` denotes the number of don't cares, and `T_i` denotes the set of numbers with the number of 1s in bits is equal to `i`.
 
 * Time complexity: `O(B * sum(|T_i| * |T_(i+1)|))` = `O(B(N + M)^2)`
 
@@ -139,7 +139,7 @@ Time complexity can be calculated by following when `B` denotes the maximum numb
 
 When `getPI()` is executed, it's time to get all the EPI (Essential Prime Implicants) which are the PI that covers minterms that not be covered by any other PIs.
 
-First of all, we need to uniform the coordinates. In this situation, the coordinate means value of minterms. For example, if given minterms are `{0, 2, 5, 6, 7, 8, 9, 13}` then we can convert them into this: `{0: 0, 2: 1, 5: 2, 6: 3, 7: 4, 8: 5, 9: 6, 13: 7}` so we can handle minterms much more easier.
+First of all, we need to uniform the coordinates. In this situation, the coordinate means the value of minterms. For example, if given minterms are `{0, 2, 5, 6, 7, 8, 9, 13}` then we can convert them into this: `{0: 0, 2: 1, 5: 2, 6: 3, 7: 4, 8: 5, 9: 6, 13: 7}` so we can handle minterms much easier.
 
 This is called Coordinate Compression. And it cost `O((N + M)log(N + M))` time.
 
@@ -154,7 +154,7 @@ Then, we can find every EPIs by following:
 ```cpp
 for(int i = 0; i < minterms.size(); ++i){
     int compPos = comp[minterms[i]]; // Compressed coordinate
-    if(cnt[compPos] == 1){ // cnt[i] == 1 means the number of PIs that selected coordinate i is one (It means, there are only one PI that covers i)
+    if(cnt[compPos] == 1){ // cnt[i] == 1 means the number of PIs that selected coordinate i is one (It means, there is only one PI that covers i)
         if(PIs[last[compPos]].getEPI()) // Already EPI
             continue;
         PIs[last[compPos]].setEPI(); // EPI Found!
@@ -169,45 +169,45 @@ As a result the total time complexity of `getEPI()` is:
 
 #### 4.2.4. Algorithm for choosing minimum number of PIs to cover all the minterms
 
-First of all, we know that EPIs are must be chosen since there are no other PIs that cover certain coordinates.
+First of all, we know that EPIs must be chosen since there are no other PIs that cover certain coordinates.
 
 So, we can eliminate EPIs and coordinates that are chosen by those EPIs from the problem.
 
-And then, we need to choose minimum number of PIs among the rest of the PIs.
+And then, we need to choose a minimum number of PIs among the rest of the PIs.
 
 This is where the problem gets really difficult.
 
-Let say we got following PIs:
+Let's say we got the following PIs:
 ```
 p1 = {0, 1}
 p2 = {1, 2, 3}
 p3 = {3, 4}
 p4 = {0, 4}
 ```
-And we have to cover `{0, 1, 2, 3, 4}` by choosing PIs that are listed in the above.
+And we have to cover `{0, 1, 2, 3, 4}` by choosing the PIs that are listed above.
 
-To make this problem easier to see, we can make the graph as following:
+To make this problem easier to see, we can make the graph as follows:
 
 <img src="./images/Picture1.png" width="300"/>
 
-Now, the problem is converted to **Set Cover** Problem since we have to choose minimum number of vertices from `G_L` to flow from `G_L` to every vertices in `G_R`.
+Now, the problem is converted to **Set Cover** Problem since we have to choose a minimum number of vertices from `G_L` to flow from `G_L` to every vertex in `G_R`.
 
-And as you know, Set Cover problem is **NP-complete** problem. So, it's impossible to find true solution in polynomial time.
+And as you know, the Set Cover problem is the **NP-complete** problem. So, it's impossible to find a true solution in polynomial time.
 
 So, I made two ways to solve this problem. By **Brute force Algorithm with reducing search space technique** and **Greedy Algorithm using max segment tree**.
 
 #### 4.2.4.1. Algorithm for getting true solution: Brute force Algorithm with reducing search space technique
 
-The code for this is same as following:
+The code for this is the same as follows:
 ```cpp
 void bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<int>& nowCase, vector<int>& minCase , int selCnt, int idx, int cost, int& minCost){
     if(idx == G.size() || (minCost != -1 && minCost <= cost)) // Reducing search space using current minimum solution
         return;
     
-    // search without choosing current vertex
+    // search without choosing the current vertex
     bruteForce(G, selected, nowCase, minCase, selCnt, idx + 1, cost, minCost);
 
-    // search while choosing current vertex
+    // search while choosing the current vertex
     int cnt = 0;
     for(int i = 0; i < G[idx].size(); ++i){
         int u = G[idx][i];
@@ -235,17 +235,17 @@ void bruteForce(vector<vector<int>>& G, vector<int>& selected, vector<int>& nowC
 }
 ```
 
-It simply do the DFS(Depth First Search) for every possible cases based on current minimum cost. So, it has exponential time complexity.
+It simply does the DFS(Depth First Search) for every possible case based on the current minimum cost. So, it has exponential time complexity.
 
 * Time complexity: `O(2^(N + M) + N + M)`
 
 #### 4.2.4.2. Algorithm for getting approximation solution: Greedy Algorithm using max segment tree
 
-As you saw in `4.2.4.1.` it is impossible to solve for true solution when the number of minterms gets higher.
+As you saw in `4.2.4.1.` it is impossible to solve for a true solution when the number of minterms gets higher.
 
-So, it is much more realistic to solve this **Set Cover** problem in polynomial time by getting approximation solution.
+So, it is much more realistic to solve this **Set Cover** problem in polynomial time by getting an approximation solution.
 
-My idea on this approximation solution is like following psudocode:
+My idea on this approximation solution is like the following pseudocode:
 ```
 Count := number of selected vertices in G_R
 Flow[v] := number of unselected vertexes in G_R that vertex v from G_L is directing
@@ -258,9 +258,9 @@ while Count < |G_R|:
 
 It is a simple method but, getting the value of `argmax(Flow)` and updating `Flow[]` consume a lot of time.
 
-To make getting value of `argmax(Flow)` and updating `Flow[]` faster, I used **Max Segment Tree**.
+To make getting the value of `argmax(Flow)` and updating `Flow[]` faster, I used **Max Segment Tree**.
 
-Each node in segment tree constructed by following structure:
+Each node in the segment tree is constructed by the following structure:
 ```cpp
 struct segNode{
     int value, idx;
@@ -288,9 +288,9 @@ struct segNode{
 
 Each node has two values:
 * `value`: number of unselected vertexes in G_R that vertex v from G_L is directing
-* `idx`: index of vertex in `G_L`
+* `idx`: index of a vertex in `G_L`
 
-Using this segment tree, we can perform getting value of `argmax(Flow)` in `O(log(N + M))` and updating `Flow[]` in `O(log(N + M))` (Amortized time complexity).
+Using this segment tree, we can perform getting the value of `argmax(Flow)` in `O(log(N + M))` and updating `Flow[]` in `O(log(N + M))` (Amortized time complexity).
 
 Checkout the following example:
 
@@ -303,7 +303,7 @@ Checkout the following example:
 * Getting `argmax(Flow)`
 <img src="./images/Picture4.png" width="700"/>
 
-Full greedy algorithm using segment tree written in C++ is same as following:
+A full greedy algorithm using a segment tree written in C++ is the same as the following:
 ```cpp
 void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& selected, vector<int>& minCase){
     int nL = GL.size(), nR = GR.size();
@@ -331,9 +331,9 @@ void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& selec
 }
 ```
 
-Unfortunately, the code above has one problem. For each of vertices in `G_R`, it is guaranteed to visit only one-time thanks to `if(selected[u]) continue;`. But, to check whether the vertex has been visited or not, `selected[u]` should be checked every time when `G_L` has an edge to vertex `u` so, one vertex can be visited multiple times.
+Unfortunately, the code above has one problem. For each of the vertices in `G_R`, it is guaranteed to visit only one-time thanks to `if(selected[u]) continue;`. But, to check whether the vertex has been visited or not, `selected[u]` should be checked every time when `G_L` has an edge to vertex `u` so, one vertex can be visited multiple times.
 
-To solve this, I implemented an Ordered Balanced Tree aka `std::set`. The following code shows a new object called `GLSet`. Using this, we can manage each of vertices much more efficiently by removing edges that flow to selected vertices in `G_R` from each of vertices in `G_L` to prevent multiple times visiting.
+To solve this, I implemented an Ordered Balanced Tree aka `std::set`. The following code shows a new object called `GLSet`. Using this, we can manage each of the vertices much more efficiently by removing edges that flow to selected vertices in `G_R` from each of the vertices in `G_L` to prevent multiple times visiting.
 
 ```cpp
 void greedy(vector<vector<int>>& GL, vector<vector<int>>& GR, vector<int>& minCase){
@@ -375,7 +375,7 @@ The approximate time complexities of each method are:
 
 ## 5. Accuracy of the algorithm
 
-I tested accuracy of the algorithm using the following test cases:
+I tested the accuracy of the algorithm using the following test cases:
 ```
 5
 5 0 1 5 6 7
@@ -473,19 +473,19 @@ True solution: F = a'd' + cd + ad
 Approximation: F = a'd' + cd + ad
 ```
 
-`True solution` means a solution that used DFS method which is designed to guarantee the true solution (minimum possible cost solution). Meanwhile, `Approximation` means a solution that used greedy method.
+`True solution` means a solution that used the DFS method which is designed to guarantee the true solution (minimum possible cost solution). Meanwhile, `Approximation` means a solution that used the greedy method.
 
 ## 6. Performance Test
 
-In this section, we're going to check how well the algorithm works in two perspectives: **runtime**, and **cost of the solution**.
+In this section, we're going to check how well the algorithm works from two perspectives: **runtime**, and **cost of the solution**.
 
 The main point is comparing the results of two methods which are DFS with search space reduction, and greedy algorithm with max segment tree.
 
-To measure indexes(Runtime, and cost of the solution) of the algorithm, I set the sample size as 20. It means that measures 20 (sample size) times for a single constraint(In this case, number of minterms) ​​and then stores arithmetic mean of those measured 20 values which is representing a measured value of the index for a single constraint.
+To measure indexes(Runtime, and cost of the solution) of the algorithm, I set the sample size as 20. It means that measures 20 (sample size) times for a single constraint(In this case, the number of minterms) ​​and then stores the arithmetic mean of those measured 20 values which is representing a measured value of the index for a single constraint.
 
-Input data was generated in uniformed random. And for uniformed input data, I made i<sup>th</sup> sample in each constraint uses i<sup>th</sup> random seed. It means that samples in the same order in each constraint will have the same random seed.
+Input data was generated in uniform random. And for uniformed input data, I made i<sup>th</sup> sample in each constraint using i<sup>th</sup> random seed. It means that samples in the same order in each constraint will have the same random seed.
 
-You can find the code that used in these tests in the `./test` directory.
+You can find the code used in these tests in the `./test` directory.
 
 ### 6.1. Runtime test
 
@@ -493,7 +493,7 @@ You can find the code that used in these tests in the `./test` directory.
 
 <img src="./images/time_118.png" width="450"/><img src="./images/time_ratio_118.png" width="450"/>
 
-You can notice that the runtime of DFS method increases in exponential scale while runtime of greedy method increases in polynomial scale. Especially in the last case (Number of minterms = 118) DFS method was 3,651 times slower than the Greedy method.
+You can notice that the runtime of the DFS method increases on the exponential scale while the runtime of the greedy method increases on the polynomial scale. Especially in the last case (Number of minterms = 118) DFS method was 3,651 times slower than the Greedy method.
 
 ### 6.2. Cost of the solution test
 
@@ -503,4 +503,4 @@ Cost means the number of PIs that are selected to cover all the given minterms.
 
 <img src="./images/cost_118.png" width="450"/><img src="./images/cost_ratio_118.png" width="450"/>
 
-The ratio of average cost of solution almost equals to the value of 1 even though the ratio of average runtime gets much much more larger.
+The ratio of the average cost of solution almost equals the value of 1 even though the ratio of average runtime gets much much larger.
